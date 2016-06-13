@@ -1,0 +1,19 @@
+# this set of tasks installs wild duck theories tools and the main
+# co-requisite, jq
+---
+- name: Install apt packages
+  apt: name="jq" state="present"
+  become_user: root
+
+- name: Install y2j
+  shell: |
+    set -o pipefail
+    docker run --rm wildducktheories/y2j y2j.sh installer /usr/local/bin | sudo bash
+  args:
+    executable: /bin/bash
+
+- name: Install CSV tools
+  shell: |
+    . /etc/profile &&
+    go get github.com/wildducktheories/go-csv &&
+    go install github.com/wildducktheories/go-csv/...

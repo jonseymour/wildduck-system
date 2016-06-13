@@ -1,0 +1,38 @@
+---
+- hosts: all
+  become: true
+  become_user: "{{ansible_ssh_user}}"
+  become_method: "sudo"
+
+  vars:
+    tracking_branch: unpublished
+    enable_install_credentials: false
+
+  roles:
+    - role: angstwad.docker_ubuntu
+      become_user: root
+      docker_group_members:  "{{ansible_ssh_user}}"
+    - role: joshualund.golang
+      become_user: root	      
+
+  tasks:
+    - name: Add ssh agent line to sudoers
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: SSH_AUTH_SOCK
+        line: Defaults env_keep += "SSH_AUTH_SOCK"
+      become_user: root
+
+    - name: Add github.com to known hosts file
+      known_hosts: 
+         name='github.com'
+         key='github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ=='
+
+    - include: tasks/wildduck-tools.yml
+
+    - name: Clone wildduck-src
+      git: 
+        repo: git@github.com:wildducktheories/wildduck-src.git
+        dest: ~/wildduck-src
+        version: "{{tracking_branch}}"
