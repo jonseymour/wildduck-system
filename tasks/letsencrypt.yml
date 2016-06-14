@@ -1,0 +1,16 @@
+---
+- name: Install certbot for doing ACME renewals
+  shell: |
+    cd /tmp &&
+    wget https://dl.eff.org/certbot-auto &&
+    mv certbot-auto /usr/local/bin &&
+    chmod a+x /usr/local/bin/certbot-auto
+  become_user: root
+
+- name: Install crontab entry for checking renewals every day
+  cron: 
+    name: renew domain certificates
+    hour: 0 
+    minute: 0 
+    state: present 
+    job: /usr/local/bin/certbot-auto renew --pre-hook 'docker stop wildduckbuild_haproxy_1' --post-hook 'docker start wildduckbuild_haproxy_1' 
