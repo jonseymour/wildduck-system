@@ -39,3 +39,5 @@
 
     - name: Build the docker images
       shell: . /etc/profile && ~/wildduck-src/wildduck-build/build.sh build
+
+    - include: tasks/letsencrypt.yml
