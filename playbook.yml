@@ -36,3 +36,6 @@
         repo: git@github.com:wildducktheories/wildduck-src.git
         dest: ~/wildduck-src
         version: "{{tracking_branch}}"
+
+    - name: Build the docker images
+      shell: . /etc/profile && ~/wildduck-src/wildduck-build/build.sh build
