@@ -1,0 +1,15 @@
+- block:
+  - name: enable ssh
+    ufw: rule=allow name=OpenSSH
+
+  - name: enable https
+    ufw: rule=allow port=443 proto=tcp
+
+  - name: enable http
+    ufw: rule=allow port=80 proto=tcp
+
+  - name: enable firewall
+    ufw: state=enabled
+
+  tags: ["firewall"]
+  become_user: "root"
